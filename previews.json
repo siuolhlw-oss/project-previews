@@ -4,10 +4,10 @@
       "slug": "lunbei-timetable",
       "title": "崙背國中課表",
       "path": "lunbei-timetable/",
-      "status": "測試中：林來進職務與排序修正",
+      "status": "測試中：班級與老師課表切換、返回班級及職務修正",
       "sourceRepository": "siuolhlw-oss/lunbei-timetable",
       "sourceBranch": "codex/class-teacher-navigation",
-      "sourceCommit": "d6afe0654317dd17b059cb0313e91d9698ed2bb5",
+      "sourceCommit": "a1985ed3ea2b528a1bf84c24113dc44a1ff284bf",
       "updatedAt": "2026-11-04",
       "previewOnlyChanges": [
         "Preview label, title, robots metadata and link to preview index"

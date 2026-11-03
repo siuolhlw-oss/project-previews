@@ -2,6 +2,8 @@ const engine = TimetableEngine.createEngine(timetableData);
 const weekdays = ['週一','週二','週三','週四','週五'];
 const viewport = matchMedia('(max-width:650px)');
 let selectedTarget = null;
+let classReturn = null;
+let activeLesson = null;
 let viewMode = 'day';
 let chosenDay = Math.max(1, ['Mon','Tue','Wed','Thu','Fri'].indexOf(new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:'Asia/Taipei'}).format(new Date())) + 1);
 const teacherPanel = document.querySelector('.teacher-panel');
@@ -11,11 +13,11 @@ teacherToggle.setAttribute('aria-expanded','true');teacherToggle.setAttribute('a
 document.querySelector('.teacher-head').append(teacherToggle);
 const schedule = document.createElement('section');
 schedule.id = 'schedule';schedule.hidden = true;schedule.tabIndex = -1;schedule.setAttribute('aria-label','課表');
-schedule.innerHTML = `<div class="schedule-head"><div><h2 id="schedule-title"></h2><span class="schedule-status" id="schedule-status" hidden>部分課表</span><p class="schedule-meta">${escapeHTML(timetableData.semester)} · ${escapeHTML(timetableData.version)} 版</p></div><div class="schedule-actions"><button type="button" id="change-class">更換班級</button><button type="button" id="change-teacher">更換老師</button></div></div><p class="schedule-notice" hidden>完整課表待補，其餘時段標示「未提供」，不代表空堂。</p><nav class="mode-controls" aria-label="課表顯示模式"><button type="button" data-mode="day" aria-pressed="true">單日列表</button><button type="button" data-mode="week" aria-pressed="false">整週課表</button></nav><p class="schedule-helper">點選課程，查看可互換的調課候選</p><nav class="weekday-buttons" aria-label="選擇星期"></nav><div class="schedule-grid"></div><div class="schedule-day"></div><p class="schedule-footer">空白表示原課表未排課；臨時調課及其他行程不在此資料內。</p><div class="candidate-panel" hidden></div>`;
+schedule.innerHTML = `<div class="schedule-head"><div><h2 id="schedule-title"></h2><span class="schedule-status" id="schedule-status" hidden>部分課表</span><p class="schedule-meta">${escapeHTML(timetableData.semester)} · ${escapeHTML(timetableData.version)} 版</p></div><div class="schedule-actions"><button type="button" data-return-class hidden></button><button type="button" id="change-class">更換班級</button><button type="button" id="change-teacher">更換老師</button></div></div><div class="lesson-summary" hidden><p></p><button type="button" id="view-candidates">查看調課候選</button></div><p class="schedule-notice" hidden>完整課表待補，其餘時段標示「未提供」，不代表空堂。</p><nav class="mode-controls" aria-label="課表顯示模式"><button type="button" data-mode="day" aria-pressed="true">單日列表</button><button type="button" data-mode="week" aria-pressed="false">整週課表</button></nav><p class="schedule-helper">點選課程，查看可互換的調課候選</p><nav class="weekday-buttons" aria-label="選擇星期"></nav><div class="schedule-grid"></div><div class="schedule-day"></div><p class="schedule-footer">空白表示原課表未排課；臨時調課及其他行程不在此資料內。</p><section class="candidate-panel" aria-label="調課候選" tabindex="-1" hidden></section>`;
 document.querySelector('main').append(schedule);
 const quickNav = document.createElement('nav');
 quickNav.className='quick-nav';quickNav.hidden=true;quickNav.setAttribute('aria-label','課表快速操作');
-quickNav.innerHTML='<button type="button" data-quick="schedule">回到課表</button><button type="button" data-quick="class">更換班級</button><button type="button" data-quick="teacher">更換老師</button>';
+quickNav.innerHTML='<button type="button" data-return-class hidden></button><button type="button" data-quick="schedule">回到課表</button><button type="button" data-quick="class">更換班級</button><button type="button" data-quick="teacher">更換老師</button>';
 document.body.append(quickNav);
 function setQuickNavVisible(visible){quickNav.hidden=!visible;document.body.classList.toggle('has-quick-nav',visible);}
 new IntersectionObserver(([entry])=>setQuickNavVisible(!schedule.hidden&&entry.boundingClientRect.bottom<=0)).observe(document.querySelector('.schedule-head'));
@@ -30,20 +32,28 @@ document.querySelector('#change-class').onclick=openClasses;
 quickNav.querySelector('[data-quick="teacher"]').onclick=openTeachers;
 quickNav.querySelector('[data-quick="class"]').onclick=openClasses;
 quickNav.querySelector('[data-quick="schedule"]').onclick=returnToSchedule;
+document.querySelectorAll('[data-return-class]').forEach(button=>button.onclick=returnToClass);
+document.querySelector('#view-candidates').onclick=()=>{if(activeLesson)openLesson(activeLesson);};
 function targetLessons(){return selectedTarget.record.lessons;}
 function secondary(lesson){return selectedTarget.kind==='teacher'?lesson.classIds.map(id=>/^[789]/.test(id)?id+' 班':engine.classes.get(id)?.label||id).join('、'):lesson.teachers.join('、');}
 function courseButton(lesson,index){
  const partial=selectedTarget.kind==='teacher'?selectedTarget.record.scheduleStatus==='partial':lesson.teachers.some(name=>engine.teachers.get(name)?.scheduleStatus==='partial');
  const label=escapeHTML(weekdays[lesson.day-1]+'第'+lesson.period+'節 '+lesson.subject+' '+secondary(lesson));
+ const selected=lesson===activeLesson;
+ const attributes=`class="lesson-cell${partial&&selectedTarget.kind==='teacher'?' partial-lesson':''}${selected?' selected':''}"${selected?' aria-current="true"':''}`;
  const content=`<strong>${escapeHTML(lesson.subject)}</strong><small>${escapeHTML(secondary(lesson))}</small>`;
- return partial?`<div class="lesson-cell partial-lesson" aria-label="${label}，部分課表，暫不提供調課候選">${content}</div>`:`<button type="button" class="lesson-cell" data-lesson="${index}" aria-label="${label}">${content}</button>`;
+ return partial&&selectedTarget.kind==='teacher'?`<div ${attributes} aria-label="${label}，部分課表，暫不提供調課候選">${content}</div>`:`<button type="button" ${attributes} data-lesson="${index}" aria-label="${label}">${content}</button>`;
 }
 function renderSchedule(){
+ document.querySelectorAll('[data-return-class]').forEach(button=>{button.hidden=!classReturn;button.textContent=classReturn?'回到 '+classReturn.id+' 班':'';});
+ quickNav.classList.toggle('has-class-origin',!!classReturn);document.body.classList.toggle('has-class-origin',!!classReturn);
+ const summary=document.querySelector('.lesson-summary');summary.hidden=!activeLesson;
+ if(activeLesson)summary.querySelector('p').textContent='已選取：'+weekdays[activeLesson.day-1]+' 第 '+activeLesson.period+' 節 · '+activeLesson.subject+' · '+secondary(activeLesson);
  const lessons=targetLessons();const title=selectedTarget.kind==='teacher'?selectedTarget.record.name+'老師':selectedTarget.record.id+' 班';
  const partial=selectedTarget.kind==='teacher'&&selectedTarget.record.scheduleStatus==='partial';
  document.querySelector('#schedule-status').hidden=!partial;
  document.querySelector('.schedule-notice').hidden=!partial;
- document.querySelector('.schedule-helper').textContent=partial?'已提供的課程仍可查看；暫不提供調課候選。':'點選課程，查看可互換的調課候選';
+ document.querySelector('.schedule-helper').textContent=partial?'已提供的課程仍可查看；暫不提供調課候選。':selectedTarget.kind==='class'?'點選課程，查看授課老師課表及調課候選':'點選課程，查看可互換的調課候選';
  document.querySelector('.schedule-footer').textContent=partial?'未提供不代表空堂；待完整課表補齊後才能判斷調課。':'空白表示原課表未排課；臨時調課及其他行程不在此資料內。';
  const emptyWeek=partial?'<span class="unknown-class">未提供</span>':'<span class="no-class">—</span>';
  const emptyDay=partial?'未提供':'未排課';
@@ -54,11 +64,29 @@ function renderSchedule(){
  document.querySelector('.weekday-buttons').innerHTML=weekdays.map((day,i)=>`<button type="button" data-day="${i+1}" aria-pressed="${chosenDay===i+1}">${day}</button>`).join('');
  document.querySelector('.schedule-day').innerHTML=timetableData.periods.map(period=>{const i=lessons.findIndex(l=>l.day===chosenDay&&l.period===period.number);return `<div class="day-slot"><div class="day-slot-time">第 ${period.number} 節<small>${period.start}</small></div>${i<0?`<div class="day-empty">${emptyDay}</div>`:courseButton(lessons[i],i)}</div>`;}).join('');
  document.querySelectorAll('.weekday-buttons button').forEach(b=>b.onclick=()=>{chosenDay=Number(b.dataset.day);renderSchedule();});
- document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>showCandidates(lessons[Number(b.dataset.lesson)]));
+ document.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>openLesson(lessons[Number(b.dataset.lesson)]));
  schedule.dataset.mode=viewMode;document.querySelectorAll('.mode-controls button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===viewMode)));
 }
 document.querySelectorAll('.mode-controls button').forEach(b=>b.onclick=()=>{viewMode=b.dataset.mode;renderSchedule();});
-function showCandidates(lesson){
+function openLesson(lesson){
+ if(selectedTarget.kind==='class'&&lesson.teachers.length===1){
+  const name=lesson.teachers[0];
+  const source=engine.teachers.get(name)?.lessons.find(l=>l.day===lesson.day&&l.period===lesson.period&&l.classIds.includes(selectedTarget.record.id)&&l.subject===lesson.subject);
+  if(source){
+   const origin={id:selectedTarget.record.id,day:chosenDay,mode:viewMode};
+   choose('teacher',name,false);classReturn=origin;chosenDay=lesson.day;activeLesson=source;
+   renderSchedule();showCandidates(source,false);schedule.focus({preventScroll:true});scrollToElement(schedule);return;
+  }
+ }
+ activeLesson=lesson;renderSchedule();showCandidates(lesson);
+}
+function returnToClass(){
+ if(!classReturn)return;
+ const origin=classReturn;
+ choose('class',origin.id,false);chosenDay=origin.day;viewMode=origin.mode;renderSchedule();
+ schedule.focus({preventScroll:true});scrollToElement(schedule);
+}
+function showCandidates(lesson,move=true){
  let name,source;
  if(selectedTarget.kind==='teacher'){name=selectedTarget.record.name;source=lesson;}
  else if(lesson.teachers.length===1){name=lesson.teachers[0];source=engine.teachers.get(name)?.lessons.find(l=>l.day===lesson.day&&l.period===lesson.period&&l.classIds.includes(selectedTarget.record.id)&&l.subject===lesson.subject);}
@@ -66,11 +94,12 @@ function showCandidates(lesson){
  const panel=document.querySelector('.candidate-panel');
  const body=result.status==='incomplete-data'?'<p class="candidate-empty">這位老師的完整課表尚未提供，暫不提供調課候選。</p>':result.status==='needs-review'?'<p class="candidate-empty">本節涉及多人授課或來源差異，需人工確認，暫不提供調課候選。</p>':result.candidates.length?'<div class="candidate-list">'+result.candidates.map(c=>`<div class="candidate-item"><strong>${weekdays[c.day-1]} 第 ${c.period} 節</strong>${escapeHTML(c.subject)} · ${escapeHTML(c.teacher)}<br><small>${c.classId} 班 · 雙方無衝堂</small></div>`).join('')+'</div>':'<p class="candidate-empty">依目前課表，找不到同班、雙方均無衝堂的直接互換選項。</p>';
  panel.innerHTML=`<div class="candidate-header"><h3>調課候選${result.status==='ok'?' · '+result.candidates.length:''}</h3><button type="button" aria-label="關閉調課候選">×</button></div><p class="selected-lesson">${weekdays[lesson.day-1]} 第 ${lesson.period} 節 · ${escapeHTML(lesson.subject)} · ${escapeHTML(name||lesson.teachers.join('、'))}</p>${body}<p class="candidate-disclaimer">第 1–7 節互調，第 8 節僅與第 8 節互調。候選依固定課表判斷，交換前仍須與對方確認。此處不會修改課表或送出申請。</p>`;
- panel.querySelector('button').onclick=returnToSchedule;panel.hidden=false;scrollToElement(panel);
+ document.querySelector('#view-candidates').textContent=result.status==='ok'?'查看調課候選（'+result.candidates.length+'）':'查看調課說明';
+ panel.querySelector('button').onclick=returnToSchedule;panel.hidden=false;if(move){panel.focus({preventScroll:true});scrollToElement(panel);}
 }
 function choose(kind,id,move=true){
  const record=kind==='teacher'?engine.teachers.get(id):engine.classes.get(id);if(!record)return;
- selectedTarget={kind,record};clearSelection();document.querySelectorAll('.teacher-button,.class-button').forEach(b=>{const active=kind==='teacher'?b.dataset.name===id:b.dataset.class===id;if(active){b.classList.add('active');b.setAttribute('aria-pressed','true');}});
+ classReturn=null;activeLesson=null;setQuickNavVisible(false);selectedTarget={kind,record};clearSelection();document.querySelectorAll('.teacher-button,.class-button').forEach(b=>{const active=kind==='teacher'?b.dataset.name===id:b.dataset.class===id;if(active){b.classList.add('active');b.setAttribute('aria-pressed','true');}});
  document.querySelector('#empty-state').hidden=true;
  setCollapsed(true);schedule.hidden=false;document.querySelector('.candidate-panel').hidden=true;renderSchedule();if(move){schedule.focus({preventScroll:true});scrollToElement(schedule);}
 }
