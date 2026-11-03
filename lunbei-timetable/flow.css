@@ -21,6 +21,7 @@
 .schedule-actions button { font-size: 1rem; min-height: 44px; white-space: normal; }
 .mode-controls button, .weekday-buttons button { font-size: 1rem; min-height: 44px; }
 .quick-nav button { font-size: .9375rem; white-space: normal; }
+body.has-quick-nav { padding-bottom: calc(4.5rem + 16px); }
 @media (max-width: 650px) {
   .teacher-head > .search { order: 3; }
   .teacher-toggle { order: 2; }

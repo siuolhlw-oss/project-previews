@@ -7,7 +7,7 @@
 - 手機單日科目 18px、授課姓名 16px；整週課表維持原字級。
 - 原有今日預設、跨日更新、班級返回及調課規則皆保留。
 
-來源：siuolhlw-oss/lunbei-timetable 的 codex/readable-fonts 分支，commit 60d1fa58d30ea1f0883c752b52151cd868cbe233。
+來源：siuolhlw-oss/lunbei-timetable 的 codex/readable-fonts 分支，commit 2dd7c00ebe9ed6965ed8a0faea1844341391010a。
 
-狀態：等待手機測試，尚未合併正式版。
+狀態：使用者確認閱讀效果 OK；溢出複查完成，文字放大時的頁尾遮擋已修正，尚未合併正式版。
 預覽專用差異只有頁面標題、測試標示、搜尋索引設定及返回預覽首頁連結。網站程式、課表資料與使用說明均與來源相同。
