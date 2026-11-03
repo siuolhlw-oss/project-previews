@@ -1,1 +1,1 @@
-const siteConfig = { manualPdf: 'user-manual.pdf?v=20261104-class1' };
+const siteConfig = { manualPdf: 'user-manual.pdf?v=20261104-today1' };

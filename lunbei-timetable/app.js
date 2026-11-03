@@ -5,7 +5,14 @@ let selectedTarget = null;
 let classReturn = null;
 let activeLesson = null;
 let viewMode = 'day';
-let chosenDay = Math.max(1, ['Mon','Tue','Wed','Thu','Fri'].indexOf(new Intl.DateTimeFormat('en-US',{weekday:'short',timeZone:'Asia/Taipei'}).format(new Date())) + 1);
+const taipeiDateFormatter = new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
+function taipeiToday(now=new Date()){
+ const parts=Object.fromEntries(taipeiDateFormatter.formatToParts(now).map(part=>[part.type,part.value]));
+ return {date:`${parts.year}-${parts.month}-${parts.day}`,day:Math.max(1,['Mon','Tue','Wed','Thu','Fri'].indexOf(parts.weekday)+1)};
+}
+const initialToday=taipeiToday();
+let chosenDay=initialToday.day;
+let observedDate=initialToday.date;
 const teacherPanel = document.querySelector('.teacher-panel');
 const teacherToggle = document.createElement('button');
 teacherToggle.type = 'button';teacherToggle.className = 'teacher-toggle';teacherToggle.textContent = '收起名單';
@@ -74,7 +81,7 @@ function openLesson(lesson){
   const source=engine.teachers.get(name)?.lessons.find(l=>l.day===lesson.day&&l.period===lesson.period&&l.classIds.includes(selectedTarget.record.id)&&l.subject===lesson.subject);
   if(source){
    const origin={id:selectedTarget.record.id,day:chosenDay,mode:viewMode};
-   choose('teacher',name,false);classReturn=origin;chosenDay=lesson.day;activeLesson=source;
+   choose('teacher',name,false,true);classReturn=origin;chosenDay=lesson.day;activeLesson=source;
    renderSchedule();showCandidates(source,false);schedule.focus({preventScroll:true});scrollToElement(schedule);return;
   }
  }
@@ -83,7 +90,7 @@ function openLesson(lesson){
 function returnToClass(){
  if(!classReturn)return;
  const origin=classReturn;
- choose('class',origin.id,false);chosenDay=origin.day;viewMode=origin.mode;renderSchedule();
+ choose('class',origin.id,false,true);chosenDay=origin.day;viewMode=origin.mode;renderSchedule();
  schedule.focus({preventScroll:true});scrollToElement(schedule);
 }
 function showCandidates(lesson,move=true){
@@ -97,12 +104,33 @@ function showCandidates(lesson,move=true){
  document.querySelector('#view-candidates').textContent=result.status==='ok'?'查看調課候選（'+result.candidates.length+'）':'查看調課說明';
  panel.querySelector('button').onclick=returnToSchedule;panel.hidden=false;if(move){panel.focus({preventScroll:true});scrollToElement(panel);}
 }
-function choose(kind,id,move=true){
+function choose(kind,id,move=true,preserveDay=false){
  const record=kind==='teacher'?engine.teachers.get(id):engine.classes.get(id);if(!record)return;
+ if(viewport.matches&&!preserveDay){const today=taipeiToday();chosenDay=today.day;observedDate=today.date;}
  classReturn=null;activeLesson=null;setQuickNavVisible(false);selectedTarget={kind,record};clearSelection();document.querySelectorAll('.teacher-button,.class-button').forEach(b=>{const active=kind==='teacher'?b.dataset.name===id:b.dataset.class===id;if(active){b.classList.add('active');b.setAttribute('aria-pressed','true');}});
  document.querySelector('#empty-state').hidden=true;
  setCollapsed(true);schedule.hidden=false;document.querySelector('.candidate-panel').hidden=true;renderSchedule();if(move){schedule.focus({preventScroll:true});scrollToElement(schedule);}
 }
+function refreshDayOnReturn(){
+ if(document.visibilityState!=='visible'||!viewport.matches)return;
+ const today=taipeiToday();
+ if(today.date===observedDate)return;
+ observedDate=today.date;chosenDay=today.day;activeLesson=null;
+ const panel=document.querySelector('.candidate-panel');
+ const wasShowingCandidates=!panel.hidden;
+ const hadHiddenFocus=panel.contains(document.activeElement)||document.querySelector('.lesson-summary').contains(document.activeElement);
+ panel.hidden=true;panel.innerHTML='';
+ document.querySelector('#view-candidates').textContent='查看調課候選';
+ if(selectedTarget){
+  renderSchedule();
+  if(hadHiddenFocus)schedule.focus({preventScroll:true});
+  if(wasShowingCandidates){setQuickNavVisible(false);scrollToElement(schedule);}
+ }
+}
+// Recheck only on return; a foreground session must not jump at midnight.
+document.addEventListener('visibilitychange',refreshDayOnReturn);
+window.addEventListener('pageshow',refreshDayOnReturn);
+window.addEventListener('focus',refreshDayOnReturn);
 document.querySelectorAll('.class-button').forEach(b=>b.onclick=()=>choose('class',b.dataset.class));
 document.querySelectorAll('.teacher-button:not(:disabled)').forEach(b=>b.onclick=()=>choose('teacher',b.dataset.name));
 clearSelection();
