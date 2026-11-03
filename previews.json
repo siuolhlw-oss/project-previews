@@ -1,0 +1,17 @@
+{
+  "projects": [
+    {
+      "slug": "lunbei-timetable",
+      "title": "崙背國中課表",
+      "path": "lunbei-timetable/",
+      "status": "正式版副本，待加入測試修改",
+      "sourceRepository": "siuolhlw-oss/lunbei-timetable",
+      "sourceBranch": "main",
+      "sourceCommit": "a09e56dc96aee3ab06e5db116ff99925ecab6603",
+      "updatedAt": "2026-11-03",
+      "previewOnlyChanges": [
+        "Preview label, title, robots metadata and link to preview index"
+      ]
+    }
+  ]
+}
