@@ -13,3 +13,25 @@
 /* Keep navigation reachable below long timetable and candidate lists. */
 .quick-nav{position:fixed;z-index:20;right:24px;bottom:16px;display:flex;gap:6px;padding:8px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 4px 24px #23413726}.quick-nav button{min-height:44px;padding:10px 14px;border:1px solid #d9e5d9;border-radius:8px;background:#f6faf4;color:#35634b;font-size:14px;white-space:nowrap}.quick-nav button[data-quick=teacher]{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}body.has-quick-nav{padding-bottom:88px}
 @media(max-width:650px){.quick-nav{left:0;right:0;bottom:0;padding:9px 12px calc(9px + env(safe-area-inset-bottom));border-radius:0;border-width:1px 0 0;gap:6px}.quick-nav button{flex:1;min-width:0;padding:10px 6px;font-size:13px}body.has-quick-nav{padding-bottom:calc(82px + env(safe-area-inset-bottom))}}
+
+/* Larger labels and daily lessons; the dense weekly grid keeps its sizing. */
+.schedule-head h2 { font-size: clamp(1.625rem, 1.5rem + .4vw, 1.875rem); overflow-wrap: anywhere; }
+.teacher-toggle { font-size: .875rem; min-height: 44px; }
+.teacher-panel.collapsed .teacher-head:after { font-size: 1rem; }
+.schedule-actions button { font-size: 1rem; min-height: 44px; white-space: normal; }
+.mode-controls button, .weekday-buttons button { font-size: 1rem; min-height: 44px; }
+.quick-nav button { font-size: .9375rem; white-space: normal; }
+@media (max-width: 650px) {
+  .teacher-head > .search { order: 3; }
+  .teacher-toggle { order: 2; }
+  .day-slot .lesson-cell { min-width: 0; min-height: 74px; line-height: 1.45; }
+  .day-slot .lesson-cell strong { font-size: 1.125rem; }
+  .day-slot .lesson-cell small { font-size: 1rem; overflow-wrap: anywhere; }
+  .day-slot-time { flex-basis: 52px; font-size: .875rem; }
+  .day-slot-time small { font-size: .75rem; }
+  .weekday-buttons { flex-wrap: wrap; }
+  .weekday-buttons button { min-width: 2.5rem; }
+  .quick-nav button { padding-inline: 4px; }
+  body.has-quick-nav { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+  body.has-quick-nav.has-class-origin { padding-bottom: calc(9rem + env(safe-area-inset-bottom)); }
+}

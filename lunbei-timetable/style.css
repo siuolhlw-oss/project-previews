@@ -3,3 +3,47 @@
 @media(max-width:650px){header{height:62px;padding:0 18px}.brand{font-size:19px}.brand svg{width:29px}.semester{display:none}main{padding:16px}.panel-title{padding:13px 13px 9px}.title{font-size:17px}.panel-title .hint{font-size:10px}.classes{display:block;padding:0 13px 13px}.class-group{gap:8px;margin-top:8px}.class-label{font-size:11px;width:36px}.class-buttons{gap:5px}.class-button{height:36px;font-size:14px}.teacher-head{display:block;padding:13px}.teacher-head .hint{display:block;margin:2px 0 0 34px;font-size:10px}.search{width:100%;margin-top:12px}.search input{height:39px;font-size:14px}.search svg{top:12px}.teacher-sections{padding:0 13px}.group summary{min-height:47px;font-size:14px}.group-body{padding-bottom:8px}.teacher-row{display:block;margin:8px 0}.row-label{display:block;width:auto;margin-bottom:5px;font-size:11px}.people{gap:6px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.teacher-button{padding:8px 9px;min-height:45px;display:block;text-align:left}.name{display:block;font-size:14px}.role{display:block;font-size:10px;margin-top:2px}.subject-order{font-size:10px;margin-bottom:10px}.teacher-footer{padding:10px 13px;font-size:10px}.result{display:block;padding:12px 14px;font-size:12px}.result strong{display:block;margin-top:3px}.preview-label{display:block;font-size:10px;margin-top:5px}.mini-note{font-size:10px}}
 
 .site-footer{max-width:1200px;margin:8px auto 26px;padding:0 28px;color:#788b7c;font-size:12px;line-height:1.8}.site-footer a{color:#147464}.empty-state{margin-top:16px;padding:18px;background:#eaf3eb;border-radius:12px;color:#487655;font-size:14px}main{max-width:1200px;margin:auto}header{gap:16px}.brand{white-space:nowrap}@media(max-width:650px){.site-footer{padding:0 16px}.brand{font-size:19px}}
+
+/* Keep names readable on small screens; make room by reflowing controls. */
+:root {
+  --font-name: clamp(1.25rem, 1.2rem + .2vw, 1.375rem);
+  --font-section: clamp(1.25rem, 1.15rem + .3vw, 1.375rem);
+}
+header { height: auto; min-height: 72px; padding-block: 12px; flex-wrap: wrap; }
+.brand { font-size: clamp(1.5rem, 1.35rem + .6vw, 1.75rem); white-space: normal; }
+.brand svg { flex-shrink: 0; }
+.title { font-size: var(--font-section); flex-wrap: wrap; }
+.panel-title { flex-wrap: wrap; gap: 6px 12px; }
+.hint, .panel-title .hint { font-size: .875rem; }
+.step { font-size: .75rem; }
+.classes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.class-group { display: block; min-width: 0; }
+.class-label { display: block; width: auto; margin-bottom: 6px; font-size: .875rem; }
+.class-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 2.75rem), 1fr)); gap: 6px; }
+.class-button { font-size: var(--font-name); font-weight: 600; height: auto; min-height: 48px; padding: 6px 2px; }
+.teacher-head { flex-wrap: wrap; }
+.teacher-head > div:first-child { min-width: 0; }
+.teacher-head .hint { flex-basis: 100%; margin: 0 0 0 34px; font-size: .875rem; font-weight: 400; }
+.search { flex: 1 1 240px; max-width: 360px; }
+.search input { min-height: 44px; height: auto; font-size: 1rem; }
+.search svg { top: 14px; }
+.group summary { font-size: 1.125rem; min-height: 48px; }
+.row-label { width: 80px; font-size: .875rem; color: #61765e; }
+.people { min-width: 0; flex: 1; gap: 8px; }
+.teacher-button { min-width: 0; max-width: 100%; min-height: 48px; padding: 9px 12px; flex-wrap: wrap; white-space: normal; text-align: left; }
+.name { font-size: var(--font-name); font-weight: 600; overflow-wrap: anywhere; }
+.role { font-size: .875rem; color: #61765e; overflow-wrap: anywhere; }
+.teacher-button.missing .role { color: #737e6e; }
+@media (max-width: 999px) {
+  .classes { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+}
+@media (max-width: 650px) {
+  .class-group { margin-top: 0; }
+  .class-label { width: auto; }
+  .teacher-head > div:first-child { flex: 1 1 150px; }
+  .teacher-head .hint { margin-left: 0; }
+  .search { max-width: none; margin-top: 0; }
+  .row-label { width: auto; }
+  .people { grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr)); }
+  .teacher-button { display: block; min-height: 76px; padding: 9px 10px; }
+}
