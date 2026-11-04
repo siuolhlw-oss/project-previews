@@ -4,10 +4,10 @@
       "slug": "lunbei-timetable",
       "title": "崙背國中課表",
       "path": "lunbei-timetable/",
-      "status": "已驗收並發佈正式版",
+      "status": "待手機驗收：所有課表預設整週",
       "sourceRepository": "siuolhlw-oss/lunbei-timetable",
-      "sourceBranch": "main",
-      "sourceCommit": "872e6df44f6d6f93949ddd3ab8b1a8d01ab27901",
+      "sourceBranch": "codex/default-week-view",
+      "sourceCommit": "99e1a11aecf99a08c70357c1c146015a075ab978",
       "updatedAt": "2026-11-04",
       "previewOnlyChanges": [
         "Preview label, title, robots metadata and link to preview index"

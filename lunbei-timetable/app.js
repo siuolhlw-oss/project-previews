@@ -6,7 +6,7 @@ let classReturn = null;
 let activeLesson = null;
 let candidatePreview = null;
 function clearCandidatePreview(){candidatePreview?.destroy();candidatePreview=null;}
-let viewMode = 'day';
+let viewMode = 'week';
 const taipeiDateFormatter = new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
 function taipeiToday(now=new Date()){
  const parts=Object.fromEntries(taipeiDateFormatter.formatToParts(now).map(part=>[part.type,part.value]));
@@ -22,7 +22,7 @@ teacherToggle.setAttribute('aria-expanded','true');teacherToggle.setAttribute('a
 document.querySelector('.teacher-head').append(teacherToggle);
 const schedule = document.createElement('section');
 schedule.id = 'schedule';schedule.hidden = true;schedule.tabIndex = -1;schedule.setAttribute('aria-label','課表');
-schedule.innerHTML = `<div class="schedule-head"><div><h2 id="schedule-title"></h2><span class="schedule-status" id="schedule-status" hidden>部分課表</span><p class="schedule-meta">${escapeHTML(timetableData.semester)} · ${escapeHTML(timetableData.version)} 版</p></div><div class="schedule-actions"><button type="button" data-return-class hidden></button><button type="button" id="change-class">更換班級</button><button type="button" id="change-teacher">更換老師</button></div></div><div class="lesson-summary" hidden><p></p><button type="button" id="view-candidates">查看調課候選</button></div><p class="schedule-notice" hidden>完整課表待補，其餘時段標示「未提供」，不代表空堂。</p><nav class="mode-controls" aria-label="課表顯示模式"><button type="button" data-mode="day" aria-pressed="true">單日列表</button><button type="button" data-mode="week" aria-pressed="false">整週課表</button></nav><p class="schedule-helper">點選課程，查看可互換的調課候選</p><nav class="weekday-buttons" aria-label="選擇星期"></nav><div class="schedule-grid"></div><div class="schedule-day"></div><p class="schedule-footer">空白表示原課表未排課；臨時調課及其他行程不在此資料內。</p><section class="candidate-panel" aria-label="調課候選" tabindex="-1" hidden></section>`;
+schedule.innerHTML = `<div class="schedule-head"><div><h2 id="schedule-title"></h2><span class="schedule-status" id="schedule-status" hidden>部分課表</span><p class="schedule-meta">${escapeHTML(timetableData.semester)} · ${escapeHTML(timetableData.version)} 版</p></div><div class="schedule-actions"><button type="button" data-return-class hidden></button><button type="button" id="change-class">更換班級</button><button type="button" id="change-teacher">更換老師</button></div></div><div class="lesson-summary" hidden><p></p><button type="button" id="view-candidates">查看調課候選</button></div><p class="schedule-notice" hidden>完整課表待補，其餘時段標示「未提供」，不代表空堂。</p><nav class="mode-controls" aria-label="課表顯示模式"><button type="button" data-mode="day" aria-pressed="false">單日列表</button><button type="button" data-mode="week" aria-pressed="true">整週課表</button></nav><p class="schedule-helper">點選課程，查看可互換的調課候選</p><nav class="weekday-buttons" aria-label="選擇星期"></nav><div class="schedule-grid"></div><div class="schedule-day"></div><p class="schedule-footer">空白表示原課表未排課；臨時調課及其他行程不在此資料內。</p><section class="candidate-panel" aria-label="調課候選" tabindex="-1" hidden></section>`;
 document.querySelector('main').append(schedule);
 const quickNav = document.createElement('nav');
 quickNav.className='quick-nav';quickNav.hidden=true;quickNav.setAttribute('aria-label','課表快速操作');
