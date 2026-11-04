@@ -7,7 +7,7 @@
 - 搜尋依現有課表科目建立關鍵字，保留原姓名、職務搜尋及分組排序；不另顯示科目文字。
 - 部分課表僅使用已知科目；待補課表維持原搜尋與停用狀態。
 
-來源：siuolhlw-oss/lunbei-timetable 的 codex/teacher-subject-search 分支，commit 45ebab7e92f21b6ab71cff410967a940aa65c0a9。
+來源：siuolhlw-oss/lunbei-timetable 的 main 分支，commit 45ebab7e92f21b6ab71cff410967a940aa65c0a9。
 
-狀態：等待使用者手機驗收，正式版尚未合併。
+狀態：使用者已驗收，正式版已合併發佈。
 預覽專用差異只有頁面標題、測試標示、搜尋索引設定及返回預覽首頁連結。網站程式、課表資料與使用說明均與來源相同。
