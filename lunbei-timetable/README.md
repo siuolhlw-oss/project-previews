@@ -7,7 +7,7 @@
 - 電腦及手機橫向，左側原老師、右側候選老師；綠色標示雙方要交換的課程。
 - 展開課表僅供查看，保留原本選取課程與回到原班級功能。
 
-來源：siuolhlw-oss/lunbei-timetable 的 codex/candidate-timetable 分支，commit 645150907dcd86b1b7ac3b7e39b6b70baa62678a。
+來源：siuolhlw-oss/lunbei-timetable 的 main 分支，commit 645150907dcd86b1b7ac3b7e39b6b70baa62678a。
 
-狀態：本機檢查完成，等待使用者手機驗收；尚未合併正式版。
+狀態：使用者已確認並同意合併；正式版已發佈並核對完成。
 預覽專用差異只有頁面標題、測試標示、搜尋索引設定及返回預覽首頁連結。網站程式、課表資料與使用說明均與來源相同。
