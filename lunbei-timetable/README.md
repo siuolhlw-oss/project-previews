@@ -7,7 +7,7 @@
 - 老師、班級及候選課表保留第 1–8 節與全部格子；空堂不顯示文字，部分課表仍顯示「未提供」。
 - 原本調課規則、班級返回與主課表選取皆保留。
 
-來源：siuolhlw-oss/lunbei-timetable 的 codex/source-slot-marker 分支，commit 872e6df44f6d6f93949ddd3ab8b1a8d01ab27901。
+來源：siuolhlw-oss/lunbei-timetable 的 main 分支，commit 872e6df44f6d6f93949ddd3ab8b1a8d01ab27901。
 
-狀態：本機檢查完成，等待手機驗收；尚未合併正式版。
+狀態：使用者已確認測試通過；正式版已合併發佈並核對完成。
 預覽專用差異只有頁面標題、測試標示、搜尋索引設定及返回預覽首頁連結。網站程式、課表資料與使用說明均與來源相同。
