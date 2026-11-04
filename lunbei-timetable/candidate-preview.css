@@ -1,0 +1,63 @@
+.candidate-list { grid-template-columns: minmax(0, 1fr); gap: 12px; overflow-anchor: none; }
+.candidate-item { min-width: 0; padding: 0; }
+.candidate-item.is-expanded { border-color: #78ab97; box-shadow: 0 0 0 1px #78ab97; }
+.candidate-toggle { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px; border: 0; border-radius: 8px; background: #fff; color: var(--ink); text-align: left; }
+.candidate-toggle:hover { background: #f0f7f3; }
+.candidate-toggle[aria-expanded=true] { background: #e8f3ed; border-radius: 8px 8px 0 0; }
+.candidate-summary { min-width: 0; overflow-wrap: anywhere; }
+.candidate-summary strong { font-size: 1rem; }
+.candidate-summary > span { display: block; font-size: 1.125rem; font-weight: 600; }
+.candidate-summary small { display: block; font-size: .875rem; color: #60785b; margin-top: 4px; }
+.candidate-toggle-state { flex: 0 0 4.5em; font-size: .875rem; color: #176b55; text-align: center; white-space: nowrap; }
+.candidate-detail { padding: 14px; border-top: 1px solid #cfe0d8; background: #fcfefb; border-radius: 0 0 8px 8px; }
+.candidate-comparison { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.candidate-comparison section { min-width: 0; }
+.candidate-comparison h4 { font-size: 1.25rem; margin: 2px 0 6px; overflow-wrap: anywhere; }
+.compare-role { margin: 0; font-size: .875rem; color: #547661; }
+.compare-lesson { margin: 0 0 12px; font-size: .875rem; color: #456c55; overflow-wrap: anywhere; }
+.comparison-source, .comparison-target .compare-week { display: none; }
+.candidate-mode-controls, .candidate-day-buttons { display: flex; gap: 5px; margin: 10px 0; flex-wrap: wrap; }
+.candidate-mode-controls button, .candidate-day-buttons button { flex: 1; min-height: 44px; padding: 7px 3px; border: 1px solid #cbdcce; border-radius: 6px; color: #456c55; background: #fff; font-size: 1rem; }
+.candidate-mode-controls button { min-width: 5em; }
+.candidate-day-buttons button { min-width: 2.5em; }
+.candidate-mode-controls button[aria-pressed=true], .candidate-day-buttons button[aria-pressed=true] { color: #fff; background: #147464; border-color: #147464; }
+.compare-day-title { font-size: 1rem; margin: 12px 0 6px; }
+.compare-day-row { display: flex; align-items: stretch; gap: 8px; margin: 8px 0; }
+.compare-time { flex: 0 0 3.5em; align-self: center; font-size: .875rem; color: #60785b; text-align: center; }
+.compare-time small { display: block; font-size: .75rem; }
+.compare-course { min-width: 0; padding: 8px; background: #edf4fc; color: #3f6588; border-radius: 5px; overflow-wrap: anywhere; }
+.compare-course strong { display: block; font-size: 1rem; margin: 0; font-weight: 600; }
+.compare-course small { display: block; font-size: .875rem; color: #607b90; }
+.compare-day-row .compare-course, .compare-day-row .compare-empty { flex: 1; }
+.compare-day-row .compare-course { padding: 10px; }
+.compare-day-row .compare-course strong { font-size: 1.125rem; }
+.compare-day-row .compare-course small { font-size: 1rem; }
+.compare-empty { display: block; padding: 8px 2px; text-align: center; color: #84917c; font-size: .75rem; overflow-wrap: anywhere; }
+.compare-course.is-picked { background: #147464; color: #fff; }
+.compare-course.is-picked small { color: #e2f3eb; }
+.compare-picked-label { display: block; font-size: .625rem; margin-bottom: 3px; }
+.compare-week-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.compare-week-table caption { font-size: .875rem; text-align: left; margin-bottom: 6px; }
+.compare-week-table th, .compare-week-table td { border: 1px solid #dce6d8; padding: 2px; vertical-align: top; overflow-wrap: anywhere; }
+.compare-week-table th { background: #f1f6ee; font-size: .75rem; color: #55704c; font-weight: 500; }
+.compare-week-table th:first-child { width: 28px; }
+.compare-week-table tbody th { vertical-align: middle; }
+.compare-week-table .compare-course { padding: 6px 3px; min-height: 54px; }
+.compare-week-table .compare-course strong { font-size: .75rem; }
+.compare-week-table .compare-course small { font-size: .6875rem; }
+.compare-note { margin: 12px 0 0; font-size: .75rem; color: #697e60; }
+.candidate-detail[data-mode=week] .comparison-target .compare-week { display: block; }
+.candidate-detail[data-mode=week] .compare-day, .candidate-detail[data-mode=week] .candidate-day-buttons { display: none; }
+@media (min-width: 900px), (min-width: 568px) and (orientation: landscape) {
+  .candidate-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .comparison-source, .comparison-target .compare-week { display: block; }
+  .candidate-comparison .compare-day, .candidate-mode-controls, .candidate-day-buttons { display: none; }
+}
+@media (max-width: 899px) {
+  .candidate-detail { padding: 10px; }
+  .candidate-comparison { gap: 10px; }
+  .compare-week-table .compare-course strong, .compare-week-table .compare-course small { font-size: .625rem; }
+  .compare-week-table .compare-empty, .compare-week-table th { font-size: .625rem; }
+  .compare-week-table th:first-child { width: 22px; }
+  .compare-week-table .compare-course { padding: 4px 1px; }
+}

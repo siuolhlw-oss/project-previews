@@ -4,6 +4,8 @@ const viewport = matchMedia('(max-width:650px)');
 let selectedTarget = null;
 let classReturn = null;
 let activeLesson = null;
+let candidatePreview = null;
+function clearCandidatePreview(){candidatePreview?.destroy();candidatePreview=null;}
 let viewMode = 'day';
 const taipeiDateFormatter = new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short'});
 function taipeiToday(now=new Date()){
@@ -32,7 +34,7 @@ function scrollToElement(element){element.scrollIntoView({block:'start',behavior
 function setCollapsed(collapsed){teacherPanel.classList.toggle('collapsed',collapsed);teacherToggle.textContent=collapsed?'更換老師':'收起名單';teacherToggle.setAttribute('aria-expanded',String(!collapsed));}
 function openTeachers(){setQuickNavVisible(false);setCollapsed(false);const search=document.querySelector('#teacher-search');search.value='';search.dispatchEvent(new Event('input'));scrollToElement(teacherPanel);search.focus({preventScroll:true});}
 function openClasses(){setQuickNavVisible(false);const panel=document.querySelector('[aria-label="班級選單"]');scrollToElement(panel);panel.querySelector('button').focus({preventScroll:true});}
-function returnToSchedule(){document.querySelector('.candidate-panel').hidden=true;setQuickNavVisible(false);schedule.focus({preventScroll:true});scrollToElement(schedule);}
+function returnToSchedule(){clearCandidatePreview();document.querySelector('.candidate-panel').hidden=true;setQuickNavVisible(false);schedule.focus({preventScroll:true});scrollToElement(schedule);}
 teacherToggle.onclick=()=>{if(teacherPanel.classList.contains('collapsed'))openTeachers();else setCollapsed(true);};
 document.querySelector('#change-teacher').onclick=openTeachers;
 document.querySelector('#change-class').onclick=openClasses;
@@ -94,18 +96,21 @@ function returnToClass(){
  schedule.focus({preventScroll:true});scrollToElement(schedule);
 }
 function showCandidates(lesson,move=true){
+ clearCandidatePreview();
  let name,source;
  if(selectedTarget.kind==='teacher'){name=selectedTarget.record.name;source=lesson;}
  else if(lesson.teachers.length===1){name=lesson.teachers[0];source=engine.teachers.get(name)?.lessons.find(l=>l.day===lesson.day&&l.period===lesson.period&&l.classIds.includes(selectedTarget.record.id)&&l.subject===lesson.subject);}
  const result=source?engine.findCandidates(name,source):{status:'needs-review',candidates:[]};
  const panel=document.querySelector('.candidate-panel');
- const body=result.status==='incomplete-data'?'<p class="candidate-empty">這位老師的完整課表尚未提供，暫不提供調課候選。</p>':result.status==='needs-review'?'<p class="candidate-empty">本節涉及多人授課或來源差異，需人工確認，暫不提供調課候選。</p>':result.candidates.length?'<div class="candidate-list">'+result.candidates.map(c=>`<div class="candidate-item"><strong>${weekdays[c.day-1]} 第 ${c.period} 節</strong>${escapeHTML(c.subject)} · ${escapeHTML(c.teacher)}<br><small>${c.classId} 班 · 雙方無衝堂</small></div>`).join('')+'</div>':'<p class="candidate-empty">依目前課表，找不到同班、雙方均無衝堂的直接互換選項。</p>';
+ const body=result.status==='incomplete-data'?'<p class="candidate-empty">這位老師的完整課表尚未提供，暫不提供調課候選。</p>':result.status==='needs-review'?'<p class="candidate-empty">本節涉及多人授課或來源差異，需人工確認，暫不提供調課候選。</p>':result.candidates.length?CandidatePreview.renderCards(result.candidates):'<p class="candidate-empty">依目前課表，找不到同班、雙方均無衝堂的直接互換選項。</p>';
  panel.innerHTML=`<div class="candidate-header"><h3>調課候選${result.status==='ok'?' · '+result.candidates.length:''}</h3><button type="button" aria-label="關閉調課候選">×</button></div><p class="selected-lesson">${weekdays[lesson.day-1]} 第 ${lesson.period} 節 · ${escapeHTML(lesson.subject)} · ${escapeHTML(name||lesson.teachers.join('、'))}</p>${body}<p class="candidate-disclaimer">第 1–7 節互調，第 8 節僅與第 8 節互調。候選依固定課表判斷，交換前仍須與對方確認。此處不會修改課表或送出申請。</p>`;
  document.querySelector('#view-candidates').textContent=result.status==='ok'?'查看調課候選（'+result.candidates.length+'）':'查看調課說明';
- panel.querySelector('button').onclick=returnToSchedule;panel.hidden=false;if(move){panel.focus({preventScroll:true});scrollToElement(panel);}
+ if(source&&result.status==='ok'&&result.candidates.length)candidatePreview=CandidatePreview.mount(panel,{engine,name,source,candidates:result.candidates,periods:timetableData.periods});
+ panel.querySelector('.candidate-header button').onclick=returnToSchedule;panel.hidden=false;if(move){panel.focus({preventScroll:true});scrollToElement(panel);}
 }
 function choose(kind,id,move=true,preserveDay=false){
  const record=kind==='teacher'?engine.teachers.get(id):engine.classes.get(id);if(!record)return;
+ clearCandidatePreview();
  if(viewport.matches&&!preserveDay){const today=taipeiToday();chosenDay=today.day;observedDate=today.date;}
  classReturn=null;activeLesson=null;setQuickNavVisible(false);selectedTarget={kind,record};clearSelection();document.querySelectorAll('.teacher-button,.class-button').forEach(b=>{const active=kind==='teacher'?b.dataset.name===id:b.dataset.class===id;if(active){b.classList.add('active');b.setAttribute('aria-pressed','true');}});
  document.querySelector('#empty-state').hidden=true;
@@ -119,7 +124,7 @@ function refreshDayOnReturn(){
  const panel=document.querySelector('.candidate-panel');
  const wasShowingCandidates=!panel.hidden;
  const hadHiddenFocus=panel.contains(document.activeElement)||document.querySelector('.lesson-summary').contains(document.activeElement);
- panel.hidden=true;panel.innerHTML='';
+ clearCandidatePreview();panel.hidden=true;panel.innerHTML='';
  document.querySelector('#view-candidates').textContent='查看調課候選';
  if(selectedTarget){
   renderSchedule();
