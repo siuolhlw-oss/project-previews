@@ -6,7 +6,7 @@
 - 每次展開候選都預設整週；切換單日時先顯示候選所在日。
 - 保留今日星期、跨日更新、班級返回、原課標記與全部空白格。
 
-來源：siuolhlw-oss/lunbei-timetable 的 codex/default-week-view 分支，commit 99e1a11aecf99a08c70357c1c146015a075ab978。
+來源：siuolhlw-oss/lunbei-timetable 的 main 分支，commit 99e1a11aecf99a08c70357c1c146015a075ab978。
 
-狀態：等待使用者手機驗收，正式版尚未合併。
+狀態：使用者已驗收，正式版已合併發佈。
 預覽專用差異只有頁面標題、測試標示、搜尋索引設定及返回預覽首頁連結。網站程式、課表資料與使用說明均與來源相同。
