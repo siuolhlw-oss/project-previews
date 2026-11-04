@@ -10,6 +10,8 @@
 
 .schedule-head h2{display:inline}.schedule-status{display:inline-block;vertical-align:middle;margin:0 0 3px 9px;padding:3px 8px;border-radius:20px;background:#fbefd7;color:#87601f;font-size:11px;white-space:nowrap}.schedule-notice{margin:12px 0 0;padding:9px 11px;border:1px solid #eddfbe;border-radius:8px;background:#fffbf2;color:#836e41;font-size:12px;line-height:1.6}.unknown-class{display:block;text-align:center;color:#8d897d;font-size:11px}.partial-lesson{cursor:default}.partial-lesson:hover{background:#edf4fc}@media(max-width:650px){.schedule-status{font-size:10px}.schedule-notice{font-size:11px}.unknown-class{font-size:10px}}
 
+/* Blank daily cells retain their full slot height, without placeholder text. */
+.day-empty { min-height: 62px; }
 /* Keep navigation reachable below long timetable and candidate lists. */
 .quick-nav{position:fixed;z-index:20;right:24px;bottom:16px;display:flex;gap:6px;padding:8px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 4px 24px #23413726}.quick-nav button{min-height:44px;padding:10px 14px;border:1px solid #d9e5d9;border-radius:8px;background:#f6faf4;color:#35634b;font-size:14px;white-space:nowrap}.quick-nav button[data-quick=teacher]{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}body.has-quick-nav{padding-bottom:88px}
 @media(max-width:650px){.quick-nav{left:0;right:0;bottom:0;padding:9px 12px calc(9px + env(safe-area-inset-bottom));border-radius:0;border-width:1px 0 0;gap:6px}.quick-nav button{flex:1;min-width:0;padding:10px 6px;font-size:13px}body.has-quick-nav{padding-bottom:calc(82px + env(safe-area-inset-bottom))}}

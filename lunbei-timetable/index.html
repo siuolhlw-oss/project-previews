@@ -10,17 +10,17 @@
 <style>.preview-notice{padding:10px 20px;background:#fff1bd;color:#654b17;font:13px/1.6 -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}.preview-notice strong{font-size:13px}.preview-notice a{color:#654b17;margin-left:auto;white-space:nowrap}</style>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css?v=20261104-type1">
-<link rel="stylesheet" href="flow.css?v=20261104-type2">
-<link rel="stylesheet" href="candidate-preview.css?v=20261104-candidate1">
-<script defer src="config.js?v=20261104-candidate1"></script>
+<link rel="stylesheet" href="flow.css?v=20261104-marker1">
+<link rel="stylesheet" href="candidate-preview.css?v=20261104-marker1">
+<script defer src="config.js?v=20261104-marker1"></script>
 <script defer src="selection-data.js?v=20261104-role1"></script>
 <script defer src="timetable-data.js"></script>
 <script defer src="menu.js"></script>
 <script defer src="timetable-engine.js"></script>
-<script defer src="candidate-preview.js?v=20261104-candidate1"></script>
-<script defer src="app.js?v=20261104-candidate1"></script>
+<script defer src="candidate-preview.js?v=20261104-marker1"></script>
+<script defer src="app.js?v=20261104-marker1"></script>
 </head><body>
-<aside class="preview-notice" aria-label="預覽版本說明"><strong>候選課表預覽</strong><span>候選課表展開與左右比較已驗收並發佈正式版。</span><a href="../">回預覽首頁</a></aside>
+<aside class="preview-notice" aria-label="預覽版本說明"><strong>待調時段標記預覽</strong><span>橘色標記原老師時段；空堂留白、保留完整節次。等待手機驗收。</span><a href="../">回預覽首頁</a></aside>
 <header><div class="brand"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#147464"/><path d="M12 12h16v17H12zM12 17h16M16 9v6M24 9v6M16 22h3M22 22h3M16 26h3" stroke="white" stroke-width="1.7" stroke-linecap="round"/></svg>崙背國中課表</div><span class="semester" id="semester">115 學年度第一學期</span></header>
 <main><section class="panel" aria-label="班級選單"><div class="panel-title"><div class="title"><span class="step">01</span>選班級</div><span class="hint">點班級，查看該班課表</span></div><div class="classes" id="classes"></div></section>
 <section class="panel teacher-panel" aria-label="教師選單"><div class="teacher-head"><div><div class="title"><span class="step">02</span>選老師<span class="hint">依職務、導師班級、科目排列</span></div></div><div class="search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke-width="1.5"/><path d="m12 12 5 5" stroke-width="1.5" stroke-linecap="round"/></svg><input id="teacher-search" type="search" aria-label="搜尋教師姓名或職務" placeholder="搜尋姓名、職務或科目"></div></div><div class="teacher-sections" id="teacher-sections"></div><div class="no-results" role="status">找不到符合的老師，請試試姓名或職務。</div><div class="teacher-footer">灰色選項：課表待補。</div></section>

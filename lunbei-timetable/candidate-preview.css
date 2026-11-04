@@ -15,12 +15,25 @@
 .candidate-comparison h4 { font-size: 1.25rem; margin: 2px 0 6px; overflow-wrap: anywhere; }
 .compare-role { margin: 0; font-size: .875rem; color: #547661; }
 .compare-lesson { margin: 0 0 12px; font-size: .875rem; color: #456c55; overflow-wrap: anywhere; }
+.comparison-target .compare-lesson { display: none; }
+.compare-source-summary { margin: 12px 0; padding: 12px; border: 1px solid #ddb466; border-radius: 9px; background: #fff3d7; color: #75460d; overflow-wrap: anywhere; }
+.compare-source-summary b { display: block; font-size: 1rem; }
+.compare-source-summary strong { margin: 3px 0; font-size: 1.25rem; }
+.compare-source-summary p { margin: 0 0 10px; font-size: 1.0625rem; }
+.compare-source-summary button { width: 100%; min-height: 44px; padding: 8px; font-size: 1.0625rem; border: 1px solid #bd9147; border-radius: 6px; background: #fffaf0; color: #75460d; }
 .comparison-source, .comparison-target .compare-week { display: none; }
 .candidate-mode-controls, .candidate-day-buttons { display: flex; gap: 5px; margin: 10px 0; flex-wrap: wrap; }
 .candidate-mode-controls button, .candidate-day-buttons button { flex: 1; min-height: 44px; padding: 7px 3px; border: 1px solid #cbdcce; border-radius: 6px; color: #456c55; background: #fff; font-size: 1rem; }
 .candidate-mode-controls button { min-width: 5em; }
 .candidate-day-buttons button { min-width: 2.5em; }
 .candidate-mode-controls button[aria-pressed=true], .candidate-day-buttons button[aria-pressed=true] { color: #fff; background: #147464; border-color: #147464; }
+.candidate-day-buttons .has-origin-day { border: 2px solid #bd9147; }
+.candidate-day-buttons small { display: block; font-size: .625rem; color: #8a591b; }
+.candidate-day-buttons [aria-pressed=true] small { color: #fff1cd; }
+.compare-legend { display: flex; gap: 4px 12px; flex-wrap: wrap; margin: 10px 0; color: #60715b; font-size: .75rem; }
+.compare-legend i { display: inline-block; width: .75em; height: .75em; margin-right: 4px; border-radius: 2px; }
+.legend-picked { background: #147464; }
+.legend-origin { background: #fff0cc; border: 1px dashed #b26d10; }
 .compare-day-title { font-size: 1rem; margin: 12px 0 6px; }
 .compare-day-row { display: flex; align-items: stretch; gap: 8px; margin: 8px 0; }
 .compare-time { flex: 0 0 3.5em; align-self: center; font-size: .875rem; color: #60785b; text-align: center; }
@@ -33,6 +46,14 @@
 .compare-day-row .compare-course strong { font-size: 1.125rem; }
 .compare-day-row .compare-course small { font-size: 1rem; }
 .compare-empty { display: block; padding: 8px 2px; text-align: center; color: #84917c; font-size: .75rem; overflow-wrap: anywhere; }
+.compare-day-row .compare-empty { min-height: 62px; border: 1px dashed #dfe7d7; border-radius: 6px; background: #f6f8f3; }
+.compare-origin-slot { border: 2px dashed #b26d10; background: #fff0cc; color: #75460d; scroll-margin-block: 16px; }
+.compare-origin-slot:focus-visible { outline: 3px solid #b26d10; outline-offset: 2px; }
+.compare-origin-slot small { color: #75460d; }
+.compare-origin-label { display: block; margin-bottom: 3px; font-size: .625rem; }
+.compare-origin-subject { display: block; font-size: .75rem; }
+.compare-day-row .compare-origin-label { font-size: .875rem; }
+.compare-day-row .compare-origin-subject { font-size: 1.125rem; }
 .compare-course.is-picked { background: #147464; color: #fff; }
 .compare-course.is-picked small { color: #e2f3eb; }
 .compare-picked-label { display: block; font-size: .625rem; margin-bottom: 3px; }
@@ -42,16 +63,19 @@
 .compare-week-table th { background: #f1f6ee; font-size: .75rem; color: #55704c; font-weight: 500; }
 .compare-week-table th:first-child { width: 28px; }
 .compare-week-table tbody th { vertical-align: middle; }
+.compare-week-table tbody tr { height: 60px; }
 .compare-week-table .compare-course { padding: 6px 3px; min-height: 54px; }
 .compare-week-table .compare-course strong { font-size: .75rem; }
 .compare-week-table .compare-course small { font-size: .6875rem; }
+.compare-week-table .origin-prefix { display: none; }
 .compare-note { margin: 12px 0 0; font-size: .75rem; color: #697e60; }
 .candidate-detail[data-mode=week] .comparison-target .compare-week { display: block; }
 .candidate-detail[data-mode=week] .compare-day, .candidate-detail[data-mode=week] .candidate-day-buttons { display: none; }
 @media (min-width: 900px), (min-width: 568px) and (orientation: landscape) {
   .candidate-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .comparison-source, .comparison-target .compare-week { display: block; }
-  .candidate-comparison .compare-day, .candidate-mode-controls, .candidate-day-buttons { display: none; }
+  .comparison-target .compare-lesson { display: block; }
+  .candidate-comparison .compare-day, .candidate-mode-controls, .candidate-day-buttons, .compare-source-summary { display: none; }
 }
 @media (max-width: 899px) {
   .candidate-detail { padding: 10px; }
@@ -60,4 +84,12 @@
   .compare-week-table .compare-empty, .compare-week-table th { font-size: .625rem; }
   .compare-week-table th:first-child { width: 22px; }
   .compare-week-table .compare-course { padding: 4px 1px; }
+}
+@media (max-width: 899px) and (orientation: portrait) {
+  .compare-week-table .compare-course strong, .compare-week-table .compare-origin-subject { font-size: .8125rem; }
+  .compare-week-table .compare-course small, .compare-week-table th { font-size: .75rem; }
+  .compare-week-table .compare-course { padding: 6px 3px; }
+  .compare-week-table .compare-origin-slot { padding: 5px 2px; }
+  .compare-week-table .compare-origin-slot strong { font-size: .75rem; }
+  .compare-week-table .compare-origin-slot small { font-size: .6875rem; }
 }

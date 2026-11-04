@@ -13,22 +13,28 @@
     return {original: {teacher: original, lesson: first[0]}, other: {teacher: other, lesson: second[0]}};
   }
 
-  function course(teacher, day, period, selected, classes) {
+  function classLabels(lesson, classes) {
+    return lesson.classIds.map(id => /^[789]/.test(id) ? id + ' 班' : classes.get(id)?.label || id).join('、');
+  }
+
+  function course(teacher, day, period, selected, classes, {origin, pickedLabel = '調課節次'} = {}) {
     const lesson = teacher.lessons.find(l => l.day === day && l.period === period);
-    if (!lesson) return '<span class="compare-empty">未排課</span>';
+    if (!lesson && origin?.lesson.day === day && origin.lesson.period === period) {
+      return `<div class="compare-course compare-origin-slot" tabindex="-1" aria-label="原老師待調時段：${days[day - 1]}第${period}節，${escape(origin.teacher.name)}，${escape(origin.lesson.subject)}，${escape(classLabels(origin.lesson, classes))}"><span class="compare-origin-label"><span class="origin-prefix">原老師</span>待調時段</span><strong>${escape(origin.teacher.name)}</strong><span class="compare-origin-subject">${escape(origin.lesson.subject)}</span><small>${escape(classLabels(origin.lesson, classes))}</small></div>`;
+    }
+    if (!lesson) return '<span class="compare-empty"></span>';
     const picked = lesson === selected;
-    const labels = lesson.classIds.map(id => /^[789]/.test(id) ? id + ' 班' : classes.get(id)?.label || id).join('、');
-    return `<div class="compare-course${picked ? ' is-picked' : ''}">${picked ? '<span class="compare-picked-label">調課節次</span>' : ''}<strong>${escape(lesson.subject)}</strong><small>${escape(labels)}</small></div>`;
+    return `<div class="compare-course${picked ? ' is-picked' : ''}">${picked ? `<span class="compare-picked-label">${escape(pickedLabel)}</span>` : ''}<strong>${escape(lesson.subject)}</strong><small>${escape(classLabels(lesson, classes))}</small></div>`;
   }
 
-  function renderWeek(teacher, selected, periods, classes) {
+  function renderWeek(teacher, selected, periods, classes, options) {
     return `<table class="compare-week-table"><caption>${escape(teacher.name)}老師整週課表</caption><thead><tr><th scope="col">節次</th>${days.map(day => `<th scope="col">${day}</th>`).join('')}</tr></thead><tbody>${periods.map(period =>
-      `<tr><th scope="row">${period.number}</th>${days.map((_, i) => `<td>${course(teacher, i + 1, period.number, selected, classes)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+      `<tr><th scope="row">${period.number}</th>${days.map((_, i) => `<td>${course(teacher, i + 1, period.number, selected, classes, options)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   }
 
-  function renderDay(teacher, selected, day, periods, classes) {
+  function renderDay(teacher, selected, day, periods, classes, options) {
     return `<p class="compare-day-title">${days[day - 1]}課表</p>${periods.map(period =>
-      `<div class="compare-day-row"><div class="compare-time">第 ${period.number} 節<small>${escape(period.start)}</small></div>${course(teacher, day, period.number, selected, classes)}</div>`).join('')}`;
+      `<div class="compare-day-row"><div class="compare-time">第 ${period.number} 節<small>${escape(period.start)}</small></div>${course(teacher, day, period.number, selected, classes, options)}</div>`).join('')}`;
   }
 
   function renderCards(candidates) {
@@ -60,7 +66,15 @@
         return;
       }
       const heading = (entry, role) => `<p class="compare-role">${role}</p><h4>${escape(entry.teacher.name)}老師</h4><p class="compare-lesson">${days[entry.lesson.day - 1]} 第 ${entry.lesson.period} 節 · ${escape(entry.lesson.subject)} · ${escape(candidate.classId)} 班</p>`;
-      detail.innerHTML = `<div class="candidate-comparison"><section class="comparison-source" aria-label="原老師課表">${heading(pair.original, '原老師')}<div class="compare-week">${renderWeek(pair.original.teacher, pair.original.lesson, periods, engine.classes)}</div></section><section class="comparison-target" aria-label="候選老師課表">${heading(pair.other, '候選老師')}<nav class="candidate-mode-controls" aria-label="候選課表顯示模式"><button type="button" data-preview-mode="day" aria-pressed="true">單日列表</button><button type="button" data-preview-mode="week" aria-pressed="false">整週課表</button></nav><nav class="candidate-day-buttons" aria-label="候選課表星期">${days.map((day, i) => `<button type="button" data-preview-day="${i + 1}" aria-pressed="${candidate.day === i + 1}">${day}</button>`).join('')}</nav><div class="compare-day">${renderDay(pair.other.teacher, pair.other.lesson, candidate.day, periods, engine.classes)}</div><div class="compare-week">${renderWeek(pair.other.teacher, pair.other.lesson, periods, engine.classes)}</div></section></div><p class="compare-note">綠色標示雙方原本要交換的課程；此處顯示原課表，尚未變更排課。</p>`;
+      const origin = pair.original;
+      const targetOptions = {origin, pickedLabel: '候選課程'};
+      const sourceSummary = `<aside class="compare-source-summary"><b>原老師要調的課</b><strong>${days[origin.lesson.day - 1]} 第 ${origin.lesson.period} 節</strong><p>${escape(origin.teacher.name)} · ${escape(origin.lesson.subject)} · ${escape(candidate.classId)} 班</p><button type="button" data-jump-origin>看${days[origin.lesson.day - 1]}第 ${origin.lesson.period} 節 →</button></aside>`;
+      detail.innerHTML = `<div class="candidate-comparison"><section class="comparison-source" aria-label="原老師課表">${heading(origin, '原老師')}<div class="compare-week">${renderWeek(origin.teacher, origin.lesson, periods, engine.classes, {pickedLabel: '原老師要調的課'})}</div></section><section class="comparison-target" aria-label="候選老師課表">${heading(pair.other, '候選老師')}${sourceSummary}<nav class="candidate-mode-controls" aria-label="候選課表顯示模式"><button type="button" data-preview-mode="day" aria-pressed="true">單日列表</button><button type="button" data-preview-mode="week" aria-pressed="false">整週課表</button></nav><nav class="candidate-day-buttons" aria-label="候選課表星期">${days.map((day, i) => `<button type="button" data-preview-day="${i + 1}"${origin.lesson.day === i + 1 ? ' class="has-origin-day"' : ''} aria-pressed="${candidate.day === i + 1}">${day}${origin.lesson.day === i + 1 ? '<small>原課時段</small>' : ''}</button>`).join('')}</nav><div class="compare-legend"><span><i class="legend-picked" aria-hidden="true"></i>候選課程</span><span><i class="legend-origin" aria-hidden="true"></i>原老師待調時段</span></div><div class="compare-day"></div><div class="compare-week">${renderWeek(pair.other.teacher, pair.other.lesson, periods, engine.classes, targetOptions)}</div></section></div><p class="compare-note">橘色標記用來對照原老師時段；此處顯示原課表，尚未變更排課。</p>`;
+      function renderPreviewDay(day) {
+        detail.querySelector('.compare-day').innerHTML = renderDay(pair.other.teacher, pair.other.lesson, day, periods, engine.classes, targetOptions);
+        detail.querySelectorAll('[data-preview-day]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.previewDay) === day)));
+      }
+      renderPreviewDay(candidate.day);
       detail.querySelectorAll('[data-preview-mode]').forEach(control => {
         control.onclick = () => {
           detail.dataset.mode = control.dataset.previewMode;
@@ -68,12 +82,15 @@
         };
       });
       detail.querySelectorAll('[data-preview-day]').forEach(control => {
-        control.onclick = () => {
-          const day = Number(control.dataset.previewDay);
-          detail.querySelector('.compare-day').innerHTML = renderDay(pair.other.teacher, pair.other.lesson, day, periods, engine.classes);
-          detail.querySelectorAll('[data-preview-day]').forEach(b => b.setAttribute('aria-pressed', String(b === control)));
-        };
+        control.onclick = () => renderPreviewDay(Number(control.dataset.previewDay));
       });
+      detail.querySelector('[data-jump-origin]').onclick = () => {
+        renderPreviewDay(origin.lesson.day);
+        const marker = detail.querySelector(detail.dataset.mode === 'week' ? '.comparison-target .compare-week .compare-origin-slot' : '.compare-day .compare-origin-slot');
+        if (!marker) return;
+        marker.focus({preventScroll: true});
+        marker.scrollIntoView({block: 'center', behavior: scope.matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth'});
+      };
     }
     buttons.forEach((button, index) => {
       button.onclick = () => {

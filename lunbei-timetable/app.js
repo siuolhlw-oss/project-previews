@@ -64,8 +64,8 @@ function renderSchedule(){
  document.querySelector('.schedule-notice').hidden=!partial;
  document.querySelector('.schedule-helper').textContent=partial?'已提供的課程仍可查看；暫不提供調課候選。':selectedTarget.kind==='class'?'點選課程，查看授課老師課表及調課候選':'點選課程，查看可互換的調課候選';
  document.querySelector('.schedule-footer').textContent=partial?'未提供不代表空堂；待完整課表補齊後才能判斷調課。':'空白表示原課表未排課；臨時調課及其他行程不在此資料內。';
- const emptyWeek=partial?'<span class="unknown-class">未提供</span>':'<span class="no-class">—</span>';
- const emptyDay=partial?'未提供':'未排課';
+ const emptyWeek=partial?'<span class="unknown-class">未提供</span>':'<span class="no-class"></span>';
+ const emptyDay=partial?'未提供':'';
  document.querySelector('#schedule-title').textContent=title;document.querySelector('.teacher-head').dataset.selected=title;
  let grid='<table class="week-table"><thead><tr><th scope="col">節次</th>'+weekdays.map(day=>'<th scope="col">'+day+'</th>').join('')+'</tr></thead><tbody>';
  timetableData.periods.forEach(period=>{if(period.number===5)grid+='<tr class="lunch-row"><td colspan="6">午間休息</td></tr>';grid+=`<tr><td>${period.number}<small class="period-time">${period.start}</small></td>`;for(let day=1;day<=5;day++){const i=lessons.findIndex(l=>l.day===day&&l.period===period.number);grid+='<td>'+(i<0?emptyWeek:courseButton(lessons[i],i))+'</td>';}grid+='</tr>';});
